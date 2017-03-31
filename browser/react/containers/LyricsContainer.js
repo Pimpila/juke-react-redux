@@ -22,11 +22,12 @@ export default class extends Component {
 
   // once component mounts, update local state with store state
   componentDidMount() {
+    // set subscribe to a reference on the component so you can call it later (in componentWillUnmount)
     this.unsubscribe = store.subscribe(() => {
-      this.setState(store.getState());
+      this.setState({lyrics: store.getState().lyrics}); // pull off just the .lyrics part of global state.
     });
   }
-  // before component unmounts, unsubscribe
+  // before component unmounts, unsubscribe. this turns off the listening we activated in subsbribe, so when global state changes, we're no longer trying to update our LyricsContainer's local state because our view is no longer mounted.
   componentWillUnmount() {
     this.unsubscribe();
   }
