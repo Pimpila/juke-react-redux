@@ -14120,7 +14120,9 @@ var _class = function (_Component) {
     value: function handleSubmit(event) {
       event.preventDefault();
       if (this.state.artistQuery && this.state.songQuery) {
+        //doing a query to get the data.
         _axios2.default.get('/api/lyrics/' + this.state.artistQuery + '/' + this.state.songQuery).then(function (res) {
+          //Data is sent to our action creator. And the action (result) is sent to the reducer via store.dispatch. The reducer modifies the global state and the new state is sent to local state in componentDidMount.
           _store2.default.dispatch((0, _lyrics.setLyrics)(res.data.lyric));
         });
       }

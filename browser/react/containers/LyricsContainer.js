@@ -44,8 +44,10 @@ export default class extends Component {
   handleSubmit(event) {
     event.preventDefault()
     if (this.state.artistQuery && this.state.songQuery) {
+      //doing a query to get the data.
       axios.get(`/api/lyrics/${this.state.artistQuery}/${this.state.songQuery}`)
       .then( res => {
+        //Data is sent to our action creator. And the action (result) is sent to the reducer via store.dispatch. The reducer modifies the global state and the new state is sent to local state in componentDidMount.
         store.dispatch(setLyrics(res.data.lyric));
       })
     }
