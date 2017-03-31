@@ -1,29 +1,66 @@
 import React, {Component} from 'react';
 import store from '../store';
+import Lyrics from '../components/Lyrics';
+import {setLyrics} from '../action-creators/lyrics';
+import axios from 'axios';
 
-export default class LyricsContainer extends Component {
+export default class extends Component {
+
   constructor() {
+
     super();
 
-    // we are setting local state based on global state values (store)
-    this.state = store.getState();
+    this.state = Object.assign({
+      artistQuery: '',
+      songQuery: ''
+    }, store.getState());
+
+    this.handleArtistInput = this.handleArtistInput.bind(this);
+    this.handleSongInput = this.handleSongInput.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  // once component mounts, update local state with store state
   componentDidMount() {
     this.unsubscribe = store.subscribe(() => {
       this.setState(store.getState());
     });
   }
-
+  // before component unmounts, unsubscribe
   componentWillUnmount() {
     this.unsubscribe();
   }
 
-  render() {
-    return (
-      <h1>Just a container for now!</h1>
-    )
+  // sets artistQuery in local state
+  handleArtistInput(artist) {
+    this.setState({ artistQuery: artist });
   }
 
+  // sets songQuery in local state
+  handleSongInput(song) {
+    this.setState({ songQuery: song });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault()
+    if (this.state.artistQuery && this.state.songQuery) {
+      axios.get(`/api/lyrics/${this.state.artistQuery}/${this.state.songQuery}`)
+      .then( res => {
+        store.dispatch(setLyrics(res.data.lyric));
+      })
+    }
+
+  }
+
+  render() {
+    return <Lyrics
+      text={this.state.text}
+      setArtist={this.handleArtistInput}
+      setSong={this.handleSongInput}
+      artistQuery={this.state.artistQuery}
+      songQuery={this.state.songQuery}
+      handleSubmit={this.handleSubmit}
+    />
+  }
 
 }

@@ -15064,19 +15064,6 @@ var _lyrics = __webpack_require__(282);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//.subscribe() → both does what you tell it to and returns a function that allows you to unsubscribe
-var unsubscribe = _store2.default.subscribe(function () {
-  console.log('----------------');
-  console.log('State changed!!', _store2.default.getState());
-});
-
-_store2.default.dispatch((0, _lyrics.setLyrics)('I can feel it coming in the air tonight ... hold on ...'));
-_store2.default.dispatch((0, _lyrics.setLyrics)('Never gonna give you up, never gonna let you down'));
-
-unsubscribe();
-
-_store2.default.dispatch((0, _lyrics.setLyrics)('Hello, darkness, my old friend.'));
-
 _reactDom2.default.render(_react2.default.createElement(
   _reactRouter.Router,
   { history: _reactRouter.hashHistory },
@@ -30787,6 +30774,16 @@ var _store = __webpack_require__(283);
 
 var _store2 = _interopRequireDefault(_store);
 
+var _Lyrics = __webpack_require__(303);
+
+var _Lyrics2 = _interopRequireDefault(_Lyrics);
+
+var _lyrics = __webpack_require__(282);
+
+var _axios = __webpack_require__(77);
+
+var _axios2 = _interopRequireDefault(_axios);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -30795,20 +30792,29 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var LyricsContainer = function (_Component) {
-  _inherits(LyricsContainer, _Component);
+var _class = function (_Component) {
+  _inherits(_class, _Component);
 
-  function LyricsContainer() {
-    _classCallCheck(this, LyricsContainer);
+  function _class() {
+    _classCallCheck(this, _class);
 
-    // we are setting local state based on global state values (store)
-    var _this = _possibleConstructorReturn(this, (LyricsContainer.__proto__ || Object.getPrototypeOf(LyricsContainer)).call(this));
+    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this));
 
-    _this.state = _store2.default.getState();
+    _this.state = Object.assign({
+      artistQuery: '',
+      songQuery: ''
+    }, _store2.default.getState());
+
+    _this.handleArtistInput = _this.handleArtistInput.bind(_this);
+    _this.handleSongInput = _this.handleSongInput.bind(_this);
+    _this.handleSubmit = _this.handleSubmit.bind(_this);
     return _this;
   }
 
-  _createClass(LyricsContainer, [{
+  // once component mounts, update local state with store state
+
+
+  _createClass(_class, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
       var _this2 = this;
@@ -30817,26 +30823,110 @@ var LyricsContainer = function (_Component) {
         _this2.setState(_store2.default.getState());
       });
     }
+    // before component unmounts, unsubscribe
+
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       this.unsubscribe();
     }
+
+    // sets artistQuery in local state
+
+  }, {
+    key: 'handleArtistInput',
+    value: function handleArtistInput(artist) {
+      this.setState({ artistQuery: artist });
+    }
+
+    // sets songQuery in local state
+
+  }, {
+    key: 'handleSongInput',
+    value: function handleSongInput(song) {
+      this.setState({ songQuery: song });
+    }
+  }, {
+    key: 'handleSubmit',
+    value: function handleSubmit(event) {
+      event.preventDefault();
+      if (this.state.artistQuery && this.state.songQuery) {
+        _axios2.default.get('/api/lyrics/' + this.state.artistQuery + '/' + this.state.songQuery).then(function (res) {
+          _store2.default.dispatch((0, _lyrics.setLyrics)(res.data.lyric));
+        });
+      }
+    }
   }, {
     key: 'render',
     value: function render() {
-      return _react2.default.createElement(
-        'h1',
-        null,
-        'Just a container for now!'
-      );
+      return _react2.default.createElement(_Lyrics2.default, {
+        text: this.state.text,
+        setArtist: this.handleArtistInput,
+        setSong: this.handleSongInput,
+        artistQuery: this.state.artistQuery,
+        songQuery: this.state.songQuery,
+        handleSubmit: this.handleSubmit
+      });
     }
   }]);
 
-  return LyricsContainer;
+  return _class;
 }(_react.Component);
 
-exports.default = LyricsContainer;
+exports.default = _class;
+
+/***/ }),
+/* 303 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function (props) {
+
+  var artistChange = function artistChange(e) {
+    props.setArtist(e.target.value);
+  };
+
+  var songChange = function songChange(e) {
+    props.setSong(e.target.value);
+  };
+
+  return _react2.default.createElement(
+    "div",
+    { id: "lyrics" },
+    _react2.default.createElement(
+      "form",
+      { onSubmit: props.handleSubmit },
+      _react2.default.createElement(
+        "div",
+        null,
+        _react2.default.createElement("input", { type: "text", value: props.artistQuery, placeholder: "Artist", onChange: artistChange }),
+        _react2.default.createElement("input", { type: "text", value: props.songQuery, placeholder: "Song", onChange: songChange })
+      ),
+      _react2.default.createElement(
+        "pre",
+        null,
+        props.text || 'Search above!'
+      ),
+      _react2.default.createElement(
+        "button",
+        { type: "submit" },
+        "Search for Lyrics"
+      )
+    )
+  );
+};
+
+var _react = __webpack_require__(3);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ })
 /******/ ]);

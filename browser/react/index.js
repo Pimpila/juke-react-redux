@@ -15,18 +15,6 @@ import LyricsContainer from './containers/LyricsContainer';
 import store from './store';
 import {setLyrics} from './action-creators/lyrics';
 
-//.subscribe() → both does what you tell it to and returns a function that allows you to unsubscribe
-const unsubscribe = store.subscribe(function () {
-    console.log('----------------');
-    console.log('State changed!!', store.getState());
-});
-
-store.dispatch(setLyrics('I can feel it coming in the air tonight ... hold on ...'));
-store.dispatch(setLyrics('Never gonna give you up, never gonna let you down'));
-
-unsubscribe();
-
-store.dispatch(setLyrics('Hello, darkness, my old friend.'));
 
 ReactDOM.render(
   <Router history={hashHistory}>
