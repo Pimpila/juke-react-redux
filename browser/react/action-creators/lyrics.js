@@ -1,6 +1,7 @@
 // ACTION CREATOR
 
 import {SET_LYRICS} from '../constants';
+import axios from 'axios';
 
 export const setLyrics = function (text) {
   return {
