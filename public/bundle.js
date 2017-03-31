@@ -8872,7 +8872,7 @@ module.exports = getIteratorFn;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.setLyrics = undefined;
+exports.fetchLyrics = exports.setLyrics = undefined;
 
 var _constants = __webpack_require__(85);
 
@@ -8882,6 +8882,16 @@ var setLyrics = exports.setLyrics = function setLyrics(text) {
     lyric: text
   };
 }; // ACTION CREATOR
+
+var fetchLyrics = exports.fetchLyrics = function fetchLyrics(artist, song) {
+  return function (dispatch, getState) {
+    //doing a query to get the data
+    axios.get('/api/lyrics/' + artist + '/' + song).then(function (res) {
+      //Data is sent to our other action creator (setLyrics). The setLyrics reducer modifies the global state and the new state is sent to local state in LyricsContainer's componentDidMount.
+      dispatch(setLyrics(res.data.lyric));
+    });
+  };
+};
 
 /***/ }),
 /* 77 */
@@ -9054,13 +9064,17 @@ var _rootReducer2 = _interopRequireDefault(_rootReducer);
 
 var _reduxLogger = __webpack_require__(309);
 
+var _reduxThunk = __webpack_require__(310);
+
+var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var logger = (0, _reduxLogger.createLogger)();
-var Middleware = (0, _redux.applyMiddleware)(logger);
+var middleware = (0, _redux.applyMiddleware)(logger, _reduxThunk2.default);
 var composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-exports.default = (0, _redux.createStore)(_rootReducer2.default, composeEnhancers(Middleware));
+exports.default = (0, _redux.createStore)(_rootReducer2.default, composeEnhancers(middleware));
 
 /***/ }),
 /* 80 */
@@ -14125,12 +14139,9 @@ var _class = function (_Component) {
     key: 'handleSubmit',
     value: function handleSubmit(event) {
       event.preventDefault();
+      //this submit event will dispatch the selected artist and song to the middleware action creator (fetchLyrics).
       if (this.state.artistQuery && this.state.songQuery) {
-        //doing a query to get the data.
-        _axios2.default.get('/api/lyrics/' + this.state.artistQuery + '/' + this.state.songQuery).then(function (res) {
-          //Data is sent to our action creator. And the action (result) is sent to the reducer via store.dispatch. The reducer modifies the global state and the new state is sent to local state in componentDidMount.
-          _store2.default.dispatch((0, _lyrics.setLyrics)(res.data.lyric));
-        });
+        _store2.default.dispatch((0, _lyrics.fetchLyrics)(this.state.artistQuery, this.state.songQuery));
       }
     }
   }, {
@@ -31836,6 +31847,35 @@ exports.defaults = _defaults2.default;
 exports.createLogger = createLogger;
 exports.logger = defaultLogger;
 exports.default = defaultLogger;
+
+/***/ }),
+/* 310 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+function createThunkMiddleware(extraArgument) {
+  return function (_ref) {
+    var dispatch = _ref.dispatch,
+        getState = _ref.getState;
+    return function (next) {
+      return function (action) {
+        if (typeof action === 'function') {
+          return action(dispatch, getState, extraArgument);
+        }
+
+        return next(action);
+      };
+    };
+  };
+}
+
+var thunk = createThunkMiddleware();
+thunk.withExtraArgument = createThunkMiddleware;
+
+exports['default'] = thunk;
 
 /***/ })
 /******/ ]);

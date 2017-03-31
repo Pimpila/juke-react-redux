@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import store from '../store';
 import Lyrics from '../components/Lyrics';
-import {setLyrics} from '../action-creators/lyrics';
+import {setLyrics, fetchLyrics} from '../action-creators/lyrics';
 import axios from 'axios';
 
 export default class extends Component {
@@ -43,15 +43,10 @@ export default class extends Component {
 
   handleSubmit(event) {
     event.preventDefault()
+    //this submit event will dispatch the selected artist and song to the middleware action creator (fetchLyrics).
     if (this.state.artistQuery && this.state.songQuery) {
-      //doing a query to get the data.
-      axios.get(`/api/lyrics/${this.state.artistQuery}/${this.state.songQuery}`)
-      .then( res => {
-        //Data is sent to our action creator. And the action (result) is sent to the reducer via store.dispatch. The reducer modifies the global state and the new state is sent to local state in componentDidMount.
-        store.dispatch(setLyrics(res.data.lyric));
-      })
+      store.dispatch(fetchLyrics(this.state.artistQuery, this.state.songQuery));
     }
-
   }
 
   render() {
