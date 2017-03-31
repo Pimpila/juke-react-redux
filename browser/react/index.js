@@ -10,20 +10,40 @@ import Songs from './components/Songs';
 import NewPlaylistContainer from './containers/NewPlaylistContainer';
 import Playlist from './components/Playlist';
 
-ReactDOM.render(
-  <Router history={hashHistory}>
-    <Route path='/' component={AppContainer}>
-      <Route path="/albums" component={Albums} />
-      <Route path="/albums/:albumId" component={Album} />
-      <Route path="/artists" component={FilterableArtistsContainer} />
-      <Route path="/artists/:artistId" component={Artist}>
-        <Route path="albums" component={Albums} />
-        <Route path="songs" component={Songs} />
-      </Route>
-      <Route path="/new-playlist" component={NewPlaylistContainer} />
-      <Route path="playlists/:playlistId" component={Playlist} />
-      <IndexRedirect to='/albums' />
-    </Route>
-  </Router>,
-  document.getElementById('app')
-);
+
+import store from './store';
+import {setLyrics} from './action-creators/lyrics';
+
+//.subscribe() → both does what you tell it to and returns a function that allows you to unsubscribe
+const unsubscribe = store.subscribe(function () {
+    console.log('----------------');
+    console.log('State changed!!', store.getState());
+});
+
+store.dispatch(setLyrics('I can feel it coming in the air tonight ... hold on ...'));
+store.dispatch(setLyrics('Never gonna give you up, never gonna let you down'));
+
+unsubscribe();
+
+store.dispatch(setLyrics('Hello, darkness, my old friend.'));
+
+// ReactDOM.render(
+//   <Router history={hashHistory}>
+//     <Route path='/' component={AppContainer}>
+//       <Route path="/albums" component={Albums} />
+//       <Route path="/albums/:albumId" component={Album} />
+//       <Route path="/artists" component={FilterableArtistsContainer} />
+//       <Route path="/artists/:artistId" component={Artist}>
+//         <Route path="albums" component={Albums} />
+//         <Route path="songs" component={Songs} />
+//       </Route>
+//       <Route path="/new-playlist" component={NewPlaylistContainer} />
+//       <Route path="playlists/:playlistId" component={Playlist} />
+//       <IndexRedirect to='/albums' />
+//     </Route>
+//   </Router>,
+//   document.getElementById('app')
+// );
+
+
+
