@@ -15862,7 +15862,14 @@ _reactDom2.default.render(_react2.default.createElement(
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var initialState = {
+
+var _store = __webpack_require__(81);
+
+var _store2 = _interopRequireDefault(_store);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var initialState = Object.assign({
   albums: [],
   artists: [],
   selectedAlbum: {},
@@ -15874,7 +15881,7 @@ var initialState = {
   playlists: [],
   selectedPlaylist: {},
   songs: []
-};
+}, _store2.default.getState());
 
 exports.default = initialState;
 

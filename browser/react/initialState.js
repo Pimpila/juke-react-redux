@@ -1,4 +1,6 @@
-const initialState = {
+import store from './store';
+
+const initialState = Object.assign({
   albums: [],
   artists: [],
   selectedAlbum: {},
@@ -10,6 +12,6 @@ const initialState = {
   playlists: [],
   selectedPlaylist: {},
   songs: []
-};
+}, store.getState());
 
 export default initialState;

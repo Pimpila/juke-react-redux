@@ -7,7 +7,7 @@ export default function reducer (state = initialState, action) {
     case SET_LYRICS:
       return Object.assign({}, state, { text: action.lyric})
     default:
-      return state
+      return state;
   }
 }
 
