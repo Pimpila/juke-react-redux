@@ -15052,6 +15052,10 @@ var _Playlist = __webpack_require__(122);
 
 var _Playlist2 = _interopRequireDefault(_Playlist);
 
+var _LyricsContainer = __webpack_require__(302);
+
+var _LyricsContainer2 = _interopRequireDefault(_LyricsContainer);
+
 var _store = __webpack_require__(283);
 
 var _store2 = _interopRequireDefault(_store);
@@ -15062,8 +15066,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 //.subscribe() → both does what you tell it to and returns a function that allows you to unsubscribe
 var unsubscribe = _store2.default.subscribe(function () {
-    console.log('----------------');
-    console.log('State changed!!', _store2.default.getState());
+  console.log('----------------');
+  console.log('State changed!!', _store2.default.getState());
 });
 
 _store2.default.dispatch((0, _lyrics.setLyrics)('I can feel it coming in the air tonight ... hold on ...'));
@@ -15073,23 +15077,27 @@ unsubscribe();
 
 _store2.default.dispatch((0, _lyrics.setLyrics)('Hello, darkness, my old friend.'));
 
-// ReactDOM.render(
-//   <Router history={hashHistory}>
-//     <Route path='/' component={AppContainer}>
-//       <Route path="/albums" component={Albums} />
-//       <Route path="/albums/:albumId" component={Album} />
-//       <Route path="/artists" component={FilterableArtistsContainer} />
-//       <Route path="/artists/:artistId" component={Artist}>
-//         <Route path="albums" component={Albums} />
-//         <Route path="songs" component={Songs} />
-//       </Route>
-//       <Route path="/new-playlist" component={NewPlaylistContainer} />
-//       <Route path="playlists/:playlistId" component={Playlist} />
-//       <IndexRedirect to='/albums' />
-//     </Route>
-//   </Router>,
-//   document.getElementById('app')
-// );
+_reactDom2.default.render(_react2.default.createElement(
+  _reactRouter.Router,
+  { history: _reactRouter.hashHistory },
+  _react2.default.createElement(
+    _reactRouter.Route,
+    { path: '/', component: _AppContainer2.default },
+    _react2.default.createElement(_reactRouter.Route, { path: '/lyrics', component: _LyricsContainer2.default }),
+    _react2.default.createElement(_reactRouter.Route, { path: '/albums', component: _Albums2.default }),
+    _react2.default.createElement(_reactRouter.Route, { path: '/albums/:albumId', component: _Album2.default }),
+    _react2.default.createElement(_reactRouter.Route, { path: '/artists', component: _FilterableArtistsContainer2.default }),
+    _react2.default.createElement(
+      _reactRouter.Route,
+      { path: '/artists/:artistId', component: _Artist2.default },
+      _react2.default.createElement(_reactRouter.Route, { path: 'albums', component: _Albums2.default }),
+      _react2.default.createElement(_reactRouter.Route, { path: 'songs', component: _Songs2.default })
+    ),
+    _react2.default.createElement(_reactRouter.Route, { path: '/new-playlist', component: _NewPlaylistContainer2.default }),
+    _react2.default.createElement(_reactRouter.Route, { path: 'playlists/:playlistId', component: _Playlist2.default }),
+    _react2.default.createElement(_reactRouter.IndexRedirect, { to: '/albums' })
+  )
+), document.getElementById('app'));
 
 /***/ }),
 /* 153 */
@@ -30102,7 +30110,7 @@ var _rootReducer2 = _interopRequireDefault(_rootReducer);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = (0, _redux.createStore)(_rootReducer2.default);
+exports.default = (0, _redux.createStore)(_rootReducer2.default, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 /***/ }),
 /* 284 */
@@ -30757,6 +30765,78 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+/* 302 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(3);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _store = __webpack_require__(283);
+
+var _store2 = _interopRequireDefault(_store);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var LyricsContainer = function (_Component) {
+  _inherits(LyricsContainer, _Component);
+
+  function LyricsContainer() {
+    _classCallCheck(this, LyricsContainer);
+
+    // we are setting local state based on global state values (store)
+    var _this = _possibleConstructorReturn(this, (LyricsContainer.__proto__ || Object.getPrototypeOf(LyricsContainer)).call(this));
+
+    _this.state = _store2.default.getState();
+    return _this;
+  }
+
+  _createClass(LyricsContainer, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      this.unsubscribe = _store2.default.subscribe(function () {
+        _this2.setState(_store2.default.getState());
+      });
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      this.unsubscribe();
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'h1',
+        null,
+        'Just a container for now!'
+      );
+    }
+  }]);
+
+  return LyricsContainer;
+}(_react.Component);
+
+exports.default = LyricsContainer;
 
 /***/ })
 /******/ ]);
